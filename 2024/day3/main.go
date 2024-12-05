@@ -165,6 +165,7 @@ var fomulars = map[string][]Token{
 
 func main() {
 	f, _ := os.Open("input.txt")
+	defer f.Close()
 	lexer := NewLexer(f)
 	tokens := []TokenData{}
 

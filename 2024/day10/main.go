@@ -32,18 +32,16 @@ func main() {
 		}
 	}
 
-	count := 0
+	res := 0
 	for i := range graph {
 		for j := range graph[0] {
 			if graph[i][j] == '0' {
-				s := score(graph, i, j, map[string]bool{})
-				count += s
+				res += score(graph, i, j, map[string]bool{})
 			}
 		}
 	}
 
-	printMap(graph)
-	fmt.Println(count)
+	fmt.Println(res)
 }
 
 func score(graph [][]rune, x, y int, visited map[string]bool) int {
@@ -82,15 +80,4 @@ func score(graph [][]rune, x, y int, visited map[string]bool) int {
 
 func key(x, y int) string {
 	return fmt.Sprintf("%d,%d", x, y)
-}
-
-func printMap(graph [][]rune) {
-	for i := range graph {
-		for j := range graph[i] {
-			fmt.Print(string(graph[i][j]))
-			fmt.Print(" ")
-		}
-		fmt.Println()
-	}
-	fmt.Println()
 }

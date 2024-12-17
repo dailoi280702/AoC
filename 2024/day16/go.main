@@ -1,0 +1,112 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"math"
+	"os"
+	"strings"
+)
+
+var directions = [][]int{
+	{1, 0},
+	{0, -1},
+	{0, 1},
+	{-1, 0},
+}
+
+func main() {
+	f, _ := os.Open("input.txt")
+	defer f.Close()
+
+	scn := bufio.NewScanner(f)
+
+	matrix := [][]rune{}
+	// currDirection := 0
+	path := map[Vec2]int{}
+
+	i := 0
+	x, y := 0, 0
+	for scn.Scan() {
+		r := []rune{}
+		for _, c := range strings.TrimSpace(scn.Text()) {
+			if c == 'S' {
+				x, y = len(r), len(matrix)
+			}
+			r = append(r, c)
+		}
+		matrix = append(matrix, r)
+		i++
+	}
+
+	score := math.MaxInt
+	findPath(matrix, x, y, 0, path, &score)
+
+	printMap(matrix)
+	fmt.Println(score)
+}
+
+func findPath(matrix [][]rune, x, y, didx int, path map[Vec2]int, score *int) {
+	// fmt.Printf("%d, %d\n", x, y)
+	if matrix[y][x] == '#' {
+		return
+	}
+
+	if matrix[y][x] == 'E' {
+		s := getScore(path)
+		if s < *score {
+			*score = s
+			fmt.Printf("%d-%d\n", s, *score)
+		}
+
+		return
+	}
+
+	v := vec2(x, y)
+	path[v] = 1
+	blocks := 0
+	for i, d := range directions {
+		dx, dy := d[0], d[1]
+
+		if matrix[y+dy][x+dx] == '#' {
+			blocks++
+			continue
+		}
+
+		if _, ok := path[vec2(x+dx, y+dy)]; ok {
+			continue
+		}
+
+		if directions[didx][0] != dx && directions[didx][1] != dy {
+			path[v] += 1000
+		}
+
+		findPath(matrix, x+dx, y+dy, i, path, score)
+		path[v] = 1
+
+	}
+
+	if blocks == 3 && matrix[y][x] == '.' {
+		matrix[y][x] = '#'
+	}
+
+	delete(path, vec2(x, y))
+}
+
+func getScore(path map[Vec2]int) int {
+	s := 0
+	for _, score := range path {
+		s += score
+	}
+	return s
+}
+
+func printMap(matrix [][]rune) {
+	for i := range matrix {
+		for j := range matrix[i] {
+			fmt.Print(string(matrix[i][j]))
+			fmt.Print(" ")
+		}
+		fmt.Print("\n")
+	}
+}

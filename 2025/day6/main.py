@@ -2,7 +2,6 @@ import math
 
 sheet = []
 operators = []
-res = 0
 
 with open("input.txt", "r") as file:
     for line in file:
@@ -10,19 +9,36 @@ with open("input.txt", "r") as file:
             operators = line.split()
             continue
 
-        sheet.append([int(x) for x in line.split()])
+        for i, c in enumerate(line):
+            if len(sheet) == i:
+                sheet.append(int(c if c.isdigit() else 0))
+                continue
 
-transposed = [[row[i] for row in sheet] for i in range(len(sheet[0]))]
+            if not c.isdigit():
+                continue
 
-for i in range(len(transposed)):
-    if operators[i] == "+":
-        res += sum(transposed[i])
+            sheet[i] = sheet[i] * 10 + int(c)
+
+
+operands = []
+curr = []
+
+for num in sheet:
+    if num == 0:
+        operands.append(curr.copy())
+        curr = []
         continue
 
-    res += math.prod(transposed[i])
+    curr.append(num)
 
 
-for line in sheet:
-    print(line)
-print(operators)
+res = 0
+
+for i in range(len(operands)):
+    if operators[i] == "+":
+        res += sum(operands[i])
+        continue
+
+    res += math.prod(operands[i])
+
 print(res)
